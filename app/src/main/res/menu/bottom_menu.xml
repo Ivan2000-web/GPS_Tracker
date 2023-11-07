@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:title="@string/home"
+        android:icon="@drawable/ic_home"
+        android:id="@+id/id_home"
+        android:orderInCategory="100"/>
+    <item
+        android:title="@string/settings"
+        android:icon="@drawable/ic_settings"
+        android:id="@+id/id_settings"
+        android:orderInCategory="200"/>
+    <item
+        android:title="@string/tracks"
+        android:icon="@drawable/ic_tracks"
+        android:id="@+id/id_tracks"
+        android:orderInCategory="300"/>
+</menu>
