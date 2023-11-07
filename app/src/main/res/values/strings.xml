@@ -3,4 +3,7 @@
     <string name="home">Home</string>
     <string name="tracks">Tracks</string>
     <string name="settings">Settings</string>
+    <string name="location">Location</string>
+    <string name="update_time">Update time</string>
+    <string name="update_time_summary">Location update time</string>
 </resources>
