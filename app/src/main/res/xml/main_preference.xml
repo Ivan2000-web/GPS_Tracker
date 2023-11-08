@@ -16,5 +16,15 @@
             app:icon="@drawable/ic_update_time"
             app:key="update_time_key"
             app:summary="@string/update_time_summary" />
+        <ListPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="#FF009EDA"
+            android:title="@string/track_color"
+            app:entries="@array/color_name"
+            app:entryValues="@array/color_value"
+            app:icon="@drawable/ic_circle"
+            app:key="color_key"
+            app:summary="@string/track_color_summary" />
     </PreferenceCategory>
 </PreferenceScreen>
