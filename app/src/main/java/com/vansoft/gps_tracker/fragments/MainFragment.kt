@@ -11,6 +11,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.vansoft.gps_tracker.databinding.FragmentMainBinding
 import org.osmdroid.config.Configuration
 import android.provider.Settings
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 
 class MainFragment : Fragment() {
@@ -25,6 +28,11 @@ class MainFragment : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initOSM()
+    }
+
     @SuppressLint("HardwareIds")
     private fun settingsOsm(){
         Configuration.getInstance().load(
@@ -33,6 +41,18 @@ class MainFragment : Fragment() {
         )
         Configuration.getInstance().userAgentValue = Settings.Secure.getString((activity as AppCompatActivity)
             .contentResolver, Settings.Secure.ANDROID_ID)
+    }
+
+    private fun initOSM() = with(binding){
+        map.controller.setZoom(20.0)
+        val mLocProvider = GpsMyLocationProvider(activity)
+        val mLocOverlay = MyLocationNewOverlay(mLocProvider, map)
+        mLocOverlay.enableMyLocation()
+        mLocOverlay.enableFollowLocation()
+        mLocOverlay.runOnFirstFix{
+            map.overlay.clear()
+            map.overlays.add(mLocOverlay)
+        }
     }
 
     companion object {
