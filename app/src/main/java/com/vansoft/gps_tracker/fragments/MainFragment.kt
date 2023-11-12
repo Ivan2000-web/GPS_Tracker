@@ -17,6 +17,7 @@ import android.provider.Settings
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import com.vansoft.gps_tracker.utils.DialogManager
 import com.vansoft.gps_tracker.utils.checkPermission
 import com.vansoft.gps_tracker.utils.showToast
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
@@ -117,7 +118,7 @@ class MainFragment : Fragment() {
         val lManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val isEnabled = lManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         if (!isEnabled) {
-            showToast("GPS выключен!")
+            DialogManager.showLocEnableDialog(activity as AppCompatActivity)
         } else {
             showToast("GPS включен!")
         }
