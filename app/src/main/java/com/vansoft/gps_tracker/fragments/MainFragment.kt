@@ -3,6 +3,7 @@ package com.vansoft.gps_tracker.fragments
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -42,40 +43,44 @@ class MainFragment : Fragment() {
     }
 
     @SuppressLint("HardwareIds")
-    private fun settingsOsm(){
+    private fun settingsOsm() {
         Configuration.getInstance().load(
             activity as AppCompatActivity,
             activity?.getSharedPreferences("osm_pref", Context.MODE_PRIVATE)
         )
-        Configuration.getInstance().userAgentValue = Settings.Secure.getString((activity as AppCompatActivity)
-            .contentResolver, Settings.Secure.ANDROID_ID)
+        Configuration.getInstance().userAgentValue = Settings.Secure.getString(
+            (activity as AppCompatActivity)
+                .contentResolver, Settings.Secure.ANDROID_ID
+        )
     }
 
-    private fun initOSM() = with(binding){
+    private fun initOSM() = with(binding) {
         map.controller.setZoom(20.0)
         val mLocProvider = GpsMyLocationProvider(activity)
         val mLocOverlay = MyLocationNewOverlay(mLocProvider, map)
         mLocOverlay.enableMyLocation()
         mLocOverlay.enableFollowLocation()
-        mLocOverlay.runOnFirstFix{
+        mLocOverlay.runOnFirstFix {
             map.overlay.clear()
             map.overlays.add(mLocOverlay)
         }
     }
 
-    private fun registerPermissions(){
+    private fun registerPermissions() {
         pLauncher = registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()){
-            if(it[Manifest.permission.ACCESS_FINE_LOCATION] == true){
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) {
+            if (it[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
                 initOSM()
-            }else showToast("Вы не дали разрешение на использование местоположения!")
+                checkLocationEnabled()
+            } else showToast("Вы не дали разрешение на использование местоположения!")
         }
     }
 
-    private fun checkLocPermission(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+    private fun checkLocPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             checkPermissionAfterQ()
-        }else{
+        } else {
             checkPermissionBeforeQ()
         }
     }
@@ -86,6 +91,7 @@ class MainFragment : Fragment() {
             && checkPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
         ) {
             initOSM()
+            checkLocationEnabled()
         } else {
             pLauncher.launch(
                 arrayOf(
@@ -99,10 +105,21 @@ class MainFragment : Fragment() {
     private fun checkPermissionBeforeQ() {
         if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
             initOSM()
+            checkLocationEnabled()
         } else {
             pLauncher.launch(
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
             )
+        }
+    }
+
+    private fun checkLocationEnabled() {
+        val lManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val isEnabled = lManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        if (!isEnabled) {
+            showToast("GPS выключен!")
+        } else {
+            showToast("GPS включен!")
         }
     }
 
