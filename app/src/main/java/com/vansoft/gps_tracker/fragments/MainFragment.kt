@@ -17,12 +17,12 @@ import androidx.appcompat.app.AppCompatActivity
 import com.vansoft.gps_tracker.databinding.FragmentMainBinding
 import org.osmdroid.config.Configuration
 import android.provider.Settings
-import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.MutableLiveData
+import androidx.fragment.app.activityViewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.vansoft.gps_tracker.MainViewModel
 import com.vansoft.gps_tracker.R
 import com.vansoft.gps_tracker.location.LocationModel
 import com.vansoft.gps_tracker.location.LocationService
@@ -40,9 +40,9 @@ class MainFragment : Fragment() {
     private var isServiceRunning = false
     private var timer: Timer? = null
     private var startTime = 0L
-    private val timeData = MutableLiveData<String>()
     private lateinit var binding: FragmentMainBinding
     private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
+    private val model: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,6 +60,7 @@ class MainFragment : Fragment() {
         checkServiceState()
         updateTime()
         registerLocReceiver()
+        locationUpdates()
     }
 
     private fun setOnClicks() = with(binding){
@@ -76,7 +77,7 @@ class MainFragment : Fragment() {
     }
 
     private fun updateTime(){
-        timeData.observe(viewLifecycleOwner){
+        model.timeData.observe(viewLifecycleOwner){
             binding.tvTime.text = it
         }
     }
@@ -88,7 +89,7 @@ class MainFragment : Fragment() {
         timer?.schedule(object: TimerTask(){
             override fun run() {
                 activity?.runOnUiThread(){
-                    timeData.value = getCurrentTime()
+                    model.timeData.value = getCurrentTime()
                 }
             }
 
@@ -230,7 +231,7 @@ class MainFragment : Fragment() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if(intent?.action == LocationService.LOC_MODEL_INTENT) {
                 val locModel = intent.getSerializableExtra(LocationService.LOC_MODEL_INTENT) as LocationModel
-                Log.d("5678", "MF distance: ${locModel.distance}")
+                model.locationUpdates.value = locModel
             }
         }
     }
@@ -239,6 +240,15 @@ class MainFragment : Fragment() {
         val locFilter = IntentFilter(LocationService.LOC_MODEL_INTENT)
         LocalBroadcastManager.getInstance(activity as AppCompatActivity)
             .registerReceiver(receiver, locFilter)
+    }
+
+    private fun locationUpdates() = with(binding){
+        model.locationUpdates.observe(viewLifecycleOwner){
+        val distance = "Distance: ${String.format("%.1f", it.distance / 1000)} km"
+        val speed = "Speed: ${String.format("%.1f", 3.6 * it.speed)} km/h"
+        tvDistance.text = distance
+        tvSpeed.text = speed
+        }
     }
 
     companion object {

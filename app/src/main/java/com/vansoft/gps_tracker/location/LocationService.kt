@@ -11,7 +11,6 @@ import android.location.Location
 import android.os.Build
 import android.os.IBinder
 import android.os.Looper
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -101,7 +100,6 @@ class LocationService : Service() {
                 sendLocData(locModel)
             }
             lastLocation = currentLocation
-            Log.d("1234", "Distance: $distance")
         }
     }
 
