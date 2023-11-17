@@ -165,7 +165,11 @@ class MainFragment : Fragment() {
             if (it[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
                 initOSM()
                 checkLocationEnabled()
-            } else showToast("Вы не дали разрешение на использование местоположения!")
+            } else {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                    showToast("Вы не дали разрешение на использование местоположения!")
+                }
+            }
         }
     }
 
@@ -218,7 +222,7 @@ class MainFragment : Fragment() {
                 }
             )
         } else {
-            showToast("GPS включен!")
+            //showToast("GPS включен!")
         }
     }
 

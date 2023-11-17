@@ -26,6 +26,10 @@ fun Fragment.showToast(s: String){
     Toast.makeText(activity, s, Toast.LENGTH_SHORT).show()
 }
 
+fun AppCompatActivity.showToast(s: String){
+    Toast.makeText(this, s, Toast.LENGTH_SHORT).show()
+}
+
 fun Fragment.checkPermission(p: String): Boolean{
     return when(PackageManager.PERMISSION_GRANTED){
         ContextCompat.checkSelfPermission(activity as AppCompatActivity, p) -> true
@@ -33,6 +37,3 @@ fun Fragment.checkPermission(p: String): Boolean{
     }
 }
 
-fun AppCompatActivity.showToast(s: String){
-    Toast.makeText(this, s, Toast.LENGTH_SHORT).show()
-}
