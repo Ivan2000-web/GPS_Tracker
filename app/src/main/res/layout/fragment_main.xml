@@ -26,7 +26,7 @@
         android:background="#99FFFFFF"
         android:paddingStart="5dp"
         android:paddingEnd="5dp"
-        android:text="Distance: 16.5 km"
+        android:text="Distance: 16.5 m"
         android:textColor="@color/black"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="@+id/tvSpeed"
