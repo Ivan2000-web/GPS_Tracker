@@ -10,27 +10,27 @@ import android.graphics.Color
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
-import com.vansoft.gps_tracker.databinding.FragmentMainBinding
-import org.osmdroid.config.Configuration
-import android.provider.Settings
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.vansoft.gps_tracker.MainViewModel
 import com.vansoft.gps_tracker.R
+import com.vansoft.gps_tracker.databinding.FragmentMainBinding
 import com.vansoft.gps_tracker.location.LocationModel
 import com.vansoft.gps_tracker.location.LocationService
 import com.vansoft.gps_tracker.utils.DialogManager
 import com.vansoft.gps_tracker.utils.TimeUtils
 import com.vansoft.gps_tracker.utils.checkPermission
 import com.vansoft.gps_tracker.utils.showToast
+import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
@@ -68,32 +68,34 @@ class MainFragment : Fragment() {
         locationUpdates()
     }
 
-    private fun setOnClicks() = with(binding){
+    private fun setOnClicks() = with(binding) {
         val listener = onClicks()
         fStartStop.setOnClickListener(listener)
     }
 
-    private fun onClicks(): View.OnClickListener{
+    private fun onClicks(): View.OnClickListener {
         return View.OnClickListener {
-            when(it.id){
-                R.id.fStartStop -> {startStopService()}
+            when (it.id) {
+                R.id.fStartStop -> {
+                    startStopService()
+                }
             }
         }
     }
 
-    private fun updateTime(){
-        model.timeData.observe(viewLifecycleOwner){
+    private fun updateTime() {
+        model.timeData.observe(viewLifecycleOwner) {
             binding.tvTime.text = it
         }
     }
 
-    private fun startTimer(){
+    private fun startTimer() {
         timer?.cancel()
         timer = Timer()
         startTime = LocationService.startTime
-        timer?.schedule(object: TimerTask(){
+        timer?.schedule(object : TimerTask() {
             override fun run() {
-                activity?.runOnUiThread(){
+                activity?.runOnUiThread() {
                     model.timeData.value = getCurrentTime()
                 }
             }
@@ -101,30 +103,35 @@ class MainFragment : Fragment() {
         }, 1, 1)
     }
 
-    private fun getCurrentTime(): String{
+    private fun getCurrentTime(): String {
         return "Time: ${TimeUtils.getTime(System.currentTimeMillis() - startTime)}"
     }
 
-    private fun startStopService(){
-        if(!isServiceRunning){
+    private fun startStopService() {
+        if (!isServiceRunning) {
             startLocService()
         } else {
             activity?.stopService(Intent(activity, LocationService::class.java))
             binding.fStartStop.setImageResource(R.drawable.ic_play)
             timer?.cancel()
+            DialogManager.showSaveDialog(requireContext(), object : DialogManager.Listener {
+                override fun onClick() {
+                    showToast("Track is saved!")
+                }
+            })
         }
         isServiceRunning = !isServiceRunning
     }
 
-    private fun checkServiceState(){
+    private fun checkServiceState() {
         isServiceRunning = LocationService.isRunning
-        if(isServiceRunning){
+        if (isServiceRunning) {
             binding.fStartStop.setImageResource(R.drawable.ic_stop)
             startTimer()
         }
     }
 
-    private fun startLocService(){
+    private fun startLocService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             activity?.startForegroundService(Intent(activity, LocationService::class.java))
         } else {
@@ -224,7 +231,7 @@ class MainFragment : Fragment() {
         if (!isEnabled) {
             DialogManager.showLocEnableDialog(
                 activity as AppCompatActivity,
-                object: DialogManager.Listener{
+                object : DialogManager.Listener {
                     override fun onClick() {
                         startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                     }
@@ -235,30 +242,31 @@ class MainFragment : Fragment() {
         }
     }
 
-    private val receiver = object : BroadcastReceiver(){
+    private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if(intent?.action == LocationService.LOC_MODEL_INTENT) {
-                val locModel = intent.getSerializableExtra(LocationService.LOC_MODEL_INTENT) as LocationModel
+            if (intent?.action == LocationService.LOC_MODEL_INTENT) {
+                val locModel =
+                    intent.getSerializableExtra(LocationService.LOC_MODEL_INTENT) as LocationModel
                 model.locationUpdates.value = locModel
             }
         }
     }
 
-    private fun registerLocReceiver(){
+    private fun registerLocReceiver() {
         val locFilter = IntentFilter(LocationService.LOC_MODEL_INTENT)
         LocalBroadcastManager.getInstance(activity as AppCompatActivity)
             .registerReceiver(receiver, locFilter)
     }
 
-    private fun locationUpdates() = with(binding){
-        model.locationUpdates.observe(viewLifecycleOwner){
-        val distance = "Distance: ${String.format("%.1f", it.distance)} m"
-        val speed = "Speed: ${String.format("%.1f", 3.6f * it.speed)} km/h"
-        val aSpeed = "Average speed: ${getAverageSpeed(it.distance)} km/h"
-        tvDistance.text = distance
-        tvSpeed.text = speed
-        tvAverageSpeed.text = aSpeed
-        updatePolyline(it.geoPointsList)
+    private fun locationUpdates() = with(binding) {
+        model.locationUpdates.observe(viewLifecycleOwner) {
+            val distance = "Distance: ${String.format("%.1f", it.distance)} m"
+            val speed = "Speed: ${String.format("%.1f", 3.6f * it.speed)} km/h"
+            val aSpeed = "Average speed: ${getAverageSpeed(it.distance)} km/h"
+            tvDistance.text = distance
+            tvSpeed.text = speed
+            tvAverageSpeed.text = aSpeed
+            updatePolyline(it.geoPointsList)
         }
     }
 
@@ -269,18 +277,18 @@ class MainFragment : Fragment() {
         )
     }
 
-    private fun addPoint(list: List<GeoPoint>){
+    private fun addPoint(list: List<GeoPoint>) {
         pl?.addPoint(list[list.size - 1])
     }
 
-    private fun fillPolyline(list: List<GeoPoint>){
-        list.forEach(){
+    private fun fillPolyline(list: List<GeoPoint>) {
+        list.forEach() {
             pl?.addPoint(it)
         }
     }
 
-    private fun updatePolyline(list: List<GeoPoint>){
-        if(list.size > 1 && firstStart){
+    private fun updatePolyline(list: List<GeoPoint>) {
+        if (list.size > 1 && firstStart) {
             fillPolyline(list)
             firstStart = false
         } else {
