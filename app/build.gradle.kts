@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id ("kotlin-kapt")
 }
 
 android {
@@ -38,6 +39,12 @@ android {
 }
 
 dependencies {
+    //Room
+    implementation ("androidx.room:room-ktx:2.6.0")
+    kapt("androidx.room:room-compiler:2.6.0")
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+    //
     implementation ("com.google.android.gms:play-services-location:21.0.1")
     implementation ("org.osmdroid:osmdroid-android:6.1.13")
     implementation ("com.github.MKergall:osmbonuspack:6.9.0")
