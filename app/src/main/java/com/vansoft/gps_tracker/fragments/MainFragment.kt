@@ -24,6 +24,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.vansoft.gps_tracker.MainViewModel
 import com.vansoft.gps_tracker.R
 import com.vansoft.gps_tracker.databinding.FragmentMainBinding
+import com.vansoft.gps_tracker.db.TrackItem
 import com.vansoft.gps_tracker.location.LocationModel
 import com.vansoft.gps_tracker.location.LocationService
 import com.vansoft.gps_tracker.utils.DialogManager
@@ -40,6 +41,7 @@ import java.util.TimerTask
 
 
 class MainFragment : Fragment() {
+    private var trackItem: TrackItem? = null
     private var pl: Polyline? = null
     private var isServiceRunning = false
     private var firstStart = true
@@ -114,7 +116,9 @@ class MainFragment : Fragment() {
             activity?.stopService(Intent(activity, LocationService::class.java))
             binding.fStartStop.setImageResource(R.drawable.ic_play)
             timer?.cancel()
-            DialogManager.showSaveDialog(requireContext(), object : DialogManager.Listener {
+            DialogManager.showSaveDialog(requireContext(),
+                trackItem,
+                object : DialogManager.Listener {
                 override fun onClick() {
                     showToast("Track is saved!")
                 }
@@ -266,6 +270,14 @@ class MainFragment : Fragment() {
             tvDistance.text = distance
             tvSpeed.text = speed
             tvAverageSpeed.text = aSpeed
+            trackItem = TrackItem(
+                null,
+                    getCurrentTime(),
+                    TimeUtils.getDate(),
+                String.format("%.1f", it.distance),
+                getAverageSpeed(it.distance),
+                ""
+            )
             updatePolyline(it.geoPointsList)
         }
     }

@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import com.vansoft.gps_tracker.R
 import com.vansoft.gps_tracker.databinding.SaveDialogBinding
+import com.vansoft.gps_tracker.db.TrackItem
 
 object DialogManager {
     fun showLocEnableDialog(context: Context, listener: Listener){
@@ -23,12 +24,18 @@ object DialogManager {
         dialog.show()
     }
 
-    fun showSaveDialog(context: Context, listener: Listener){
+    fun showSaveDialog(context: Context, item: TrackItem?, listener: Listener){
         val builder = AlertDialog.Builder(context)
         val binding = SaveDialogBinding.inflate(LayoutInflater.from(context), null, false)
         builder.setView(binding.root)
         val dialog = builder.create()
         binding.apply {
+            val time = "${item?.time} s"
+            val speed = "${item?.averageSpeed} km/h"
+            val distance = "${item?.distance} m"
+            tvTime.text = time
+            tvSpeed.text = speed
+            tvDistance.text = distance
             bSave.setOnClickListener(){
                 dialog.dismiss()
                 listener.onClick()
