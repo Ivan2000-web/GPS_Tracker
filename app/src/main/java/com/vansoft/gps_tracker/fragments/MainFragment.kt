@@ -41,7 +41,7 @@ import java.util.TimerTask
 
 
 class MainFragment : Fragment() {
-    private var trackItem: TrackItem? = null
+    private var locationModel: LocationModel? = null
     private var pl: Polyline? = null
     private var isServiceRunning = false
     private var firstStart = true
@@ -117,7 +117,7 @@ class MainFragment : Fragment() {
             binding.fStartStop.setImageResource(R.drawable.ic_play)
             timer?.cancel()
             DialogManager.showSaveDialog(requireContext(),
-                trackItem,
+                getTrackItem(),
                 object : DialogManager.Listener {
                 override fun onClick() {
                     showToast("Track is saved!")
@@ -125,6 +125,17 @@ class MainFragment : Fragment() {
             })
         }
         isServiceRunning = !isServiceRunning
+    }
+
+    private fun getTrackItem(): TrackItem{
+        return TrackItem(
+            null,
+            getCurrentTime(),
+            TimeUtils.getDate(),
+            String.format("%.1f", locationModel?.distance),
+            getAverageSpeed(locationModel?.distance ?: 0.0f),
+            geoPointsToString(locationModel?.geoPointsList ?: listOf())
+        )
     }
 
     private fun checkServiceState() {
@@ -270,14 +281,7 @@ class MainFragment : Fragment() {
             tvDistance.text = distance
             tvSpeed.text = speed
             tvAverageSpeed.text = aSpeed
-            trackItem = TrackItem(
-                null,
-                    getCurrentTime(),
-                    TimeUtils.getDate(),
-                String.format("%.1f", it.distance),
-                getAverageSpeed(it.distance),
-                ""
-            )
+            locationModel = it
             updatePolyline(it.geoPointsList)
         }
     }
@@ -306,6 +310,14 @@ class MainFragment : Fragment() {
         } else {
             addPoint(list)
         }
+    }
+
+    private fun geoPointsToString(list: List<GeoPoint>): String{
+        val sb = StringBuilder()
+        list.forEach{
+            sb.append("${it.latitude}, ${it.longitude}/")
+        }
+        return sb.toString()
     }
 
     override fun onDetach() {
