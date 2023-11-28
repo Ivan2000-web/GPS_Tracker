@@ -21,6 +21,10 @@ class MainViewModel(db: MainDb) : ViewModel() {
     fun insertTrack(trackItem: TrackItem) = viewModelScope.launch {
         dao.insertTrack(trackItem)
     }
+
+    fun deleteTrack(trackItem: TrackItem) = viewModelScope.launch {
+        dao.deleteTrack(trackItem)
+    }
     class ViewModelFactory(private val db: MainDb) : ViewModelProvider.Factory{
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if(modelClass.isAssignableFrom(MainViewModel::class.java)){

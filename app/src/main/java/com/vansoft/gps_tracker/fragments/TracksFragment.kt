@@ -11,9 +11,10 @@ import com.vansoft.gps_tracker.MainApp
 import com.vansoft.gps_tracker.MainViewModel
 import com.vansoft.gps_tracker.databinding.TracksBinding
 import com.vansoft.gps_tracker.db.TrackAdapter
+import com.vansoft.gps_tracker.db.TrackItem
 
 
-class TracksFragment : Fragment() {
+class TracksFragment : Fragment(), TrackAdapter.Listener {
     private lateinit var binding: TracksBinding
     private lateinit var adapter: TrackAdapter
     private val model: MainViewModel by activityViewModels{
@@ -43,7 +44,7 @@ class TracksFragment : Fragment() {
     }
 
     private fun initRcView() = with(binding) {
-        adapter = TrackAdapter()
+        adapter = TrackAdapter(this@TracksFragment)
         rcView.layoutManager= LinearLayoutManager(requireContext())
         rcView.adapter = adapter
     }
@@ -51,5 +52,9 @@ class TracksFragment : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance() = TracksFragment()
+    }
+
+    override fun onClick(track: TrackItem) {
+        model.deleteTrack(track)
     }
 }
