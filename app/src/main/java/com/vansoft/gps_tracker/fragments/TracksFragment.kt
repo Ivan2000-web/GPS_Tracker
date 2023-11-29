@@ -12,6 +12,7 @@ import com.vansoft.gps_tracker.MainViewModel
 import com.vansoft.gps_tracker.databinding.TracksBinding
 import com.vansoft.gps_tracker.db.TrackAdapter
 import com.vansoft.gps_tracker.db.TrackItem
+import com.vansoft.gps_tracker.utils.openFragment
 
 
 class TracksFragment : Fragment(), TrackAdapter.Listener {
@@ -54,7 +55,11 @@ class TracksFragment : Fragment(), TrackAdapter.Listener {
         fun newInstance() = TracksFragment()
     }
 
-    override fun onClick(track: TrackItem) {
-        model.deleteTrack(track)
+    override fun onClick(track: TrackItem, type: TrackAdapter.ClickType) {
+        when(type){
+            TrackAdapter.ClickType.DELETE -> model.deleteTrack(track)
+            TrackAdapter.ClickType.OPEN -> openFragment(ViewTrackFragment.newInstance())
+        }
+
     }
 }
