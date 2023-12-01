@@ -9,12 +9,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.fragment.app.activityViewModels
 import com.vansoft.gps_tracker.MainApp
 import com.vansoft.gps_tracker.MainViewModel
+import com.vansoft.gps_tracker.R
 import com.vansoft.gps_tracker.databinding.ViewTrackBinding
 import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polyline
 
 
@@ -61,6 +64,7 @@ class ViewTrackFragment : Fragment() {
             tvDistance.text = distance
             val polyline = getPolyline(it.geoPoints)
             map.overlays.add(polyline)
+            setMarkers(polyline.actualPoints)
             goToPosition(polyline.actualPoints[0])
         }
     }
@@ -79,6 +83,18 @@ class ViewTrackFragment : Fragment() {
     private fun goToPosition(startPosition: GeoPoint){
         binding.map.controller.zoomTo(15.0)
         binding.map.controller.animateTo(startPosition)
+    }
+
+    private fun setMarkers(list: List<GeoPoint>) = with(binding){
+        val startMarker = Marker(map)
+        val finishMarker = Marker(map)
+        startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        finishMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        finishMarker.icon = getDrawable(requireContext(), R.drawable.ic_finish)
+        startMarker.position = list[0]
+        finishMarker.position = list[list.size - 1]
+        map.overlays.add(startMarker)
+        map.overlays.add(finishMarker)
     }
 
     companion object {
