@@ -14,6 +14,8 @@ import com.vansoft.gps_tracker.MainApp
 import com.vansoft.gps_tracker.MainViewModel
 import com.vansoft.gps_tracker.databinding.ViewTrackBinding
 import org.osmdroid.config.Configuration
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.Polyline
 
 
 class ViewTrackFragment : Fragment() {
@@ -57,7 +59,26 @@ class ViewTrackFragment : Fragment() {
             tvTime.text = it.time
             tvAverageSpeed.text = averageSpeed
             tvDistance.text = distance
+            val polyline = getPolyline(it.geoPoints)
+            map.overlays.add(polyline)
+            goToPosition(polyline.actualPoints[0])
         }
+    }
+
+    private fun getPolyline(geoPoints: String): Polyline{
+        val polyline = Polyline()
+        val list = geoPoints.split("/")
+        list.forEach{
+            if(it.isEmpty()) return@forEach
+            val points = it.split(",")
+            polyline.addPoint(GeoPoint(points[0].toDouble(), points[1].toDouble()))
+        }
+        return polyline;
+    }
+
+    private fun goToPosition(startPosition: GeoPoint){
+        binding.map.controller.zoomTo(15.0)
+        binding.map.controller.animateTo(startPosition)
     }
 
     companion object {
