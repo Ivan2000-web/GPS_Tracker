@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.preference.PreferenceManager
 import com.vansoft.gps_tracker.MainApp
 import com.vansoft.gps_tracker.MainViewModel
 import com.vansoft.gps_tracker.R
@@ -185,7 +186,10 @@ class MainFragment : Fragment() {
 
     private fun initOSM() = with(binding) {
         pl = Polyline()
-        pl?.outlinePaint?.color = Color.BLUE
+        pl?.outlinePaint?.color = Color.parseColor(
+            PreferenceManager.getDefaultSharedPreferences(requireContext())
+                .getString("color_key", "#121211")
+        )
         map.controller.setZoom(20.0)
         val mLocProvider = GpsMyLocationProvider(activity)
         val mLocOverlay = MyLocationNewOverlay(mLocProvider, map)

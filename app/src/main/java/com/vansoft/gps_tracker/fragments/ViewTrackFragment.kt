@@ -2,6 +2,7 @@ package com.vansoft.gps_tracker.fragments
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.provider.Settings
 import androidx.fragment.app.Fragment
@@ -11,6 +12,8 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.fragment.app.activityViewModels
+import androidx.preference.Preference
+import androidx.preference.PreferenceManager
 import com.vansoft.gps_tracker.MainApp
 import com.vansoft.gps_tracker.MainViewModel
 import com.vansoft.gps_tracker.R
@@ -71,6 +74,10 @@ class ViewTrackFragment : Fragment() {
 
     private fun getPolyline(geoPoints: String): Polyline{
         val polyline = Polyline()
+        polyline.outlinePaint.color = Color.parseColor(
+            PreferenceManager.getDefaultSharedPreferences(requireContext())
+                .getString("color_key", "#121211")
+        )
         val list = geoPoints.split("/")
         list.forEach{
             if(it.isEmpty()) return@forEach
