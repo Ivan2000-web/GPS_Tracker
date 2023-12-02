@@ -6,6 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".fragments.MainFragment">
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fCenter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:clickable="true"
+        android:src="@drawable/ic_loc"
+        app:backgroundTint="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <org.osmdroid.views.MapView
         android:id="@+id/map"
         android:layout_width="0dp"

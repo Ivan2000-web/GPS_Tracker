@@ -50,6 +50,7 @@ class MainFragment : Fragment() {
     private var firstStart = true
     private var timer: Timer? = null
     private var startTime = 0L
+    private lateinit var mLocOverlay: MyLocationNewOverlay
     private lateinit var binding: FragmentMainBinding
     private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
     private val model: MainViewModel by activityViewModels{
@@ -81,16 +82,21 @@ class MainFragment : Fragment() {
     private fun setOnClicks() = with(binding) {
         val listener = onClicks()
         fStartStop.setOnClickListener(listener)
+        fCenter.setOnClickListener(listener)
     }
 
     private fun onClicks(): View.OnClickListener {
         return View.OnClickListener {
             when (it.id) {
-                R.id.fStartStop -> {
-                    startStopService()
-                }
+                R.id.fStartStop -> { startStopService() }
+                R.id.fCenter -> { centerLocation() }
             }
         }
+    }
+
+    private fun centerLocation() {
+        binding.map.controller.animateTo(mLocOverlay.myLocation)
+        mLocOverlay.enableFollowLocation()
     }
 
     private fun updateTime() {
@@ -192,7 +198,7 @@ class MainFragment : Fragment() {
         )
         map.controller.setZoom(20.0)
         val mLocProvider = GpsMyLocationProvider(activity)
-        val mLocOverlay = MyLocationNewOverlay(mLocProvider, map)
+        mLocOverlay = MyLocationNewOverlay(mLocProvider, map)
         mLocOverlay.enableMyLocation()
         mLocOverlay.enableFollowLocation()
         mLocOverlay.runOnFirstFix {
