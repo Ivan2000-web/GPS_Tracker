@@ -176,6 +176,7 @@ class MainFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         checkLocPermission()
+        firstStart = true //fix bug with display polyline after onPause()
     }
 
     @SuppressLint("HardwareIds")
@@ -203,8 +204,8 @@ class MainFragment : Fragment() {
         mLocOverlay.enableFollowLocation()
         mLocOverlay.runOnFirstFix {
             map.overlay.clear()
-            map.overlays.add(mLocOverlay)
             map.overlays.add(pl)
+            map.overlays.add(mLocOverlay)
         }
     }
 
@@ -313,7 +314,7 @@ class MainFragment : Fragment() {
     }
 
     private fun addPoint(list: List<GeoPoint>) {
-        pl?.addPoint(list[list.size - 1])
+        if(list.isNotEmpty()){ pl?.addPoint(list[list.size - 1]) }
     }
 
     private fun fillPolyline(list: List<GeoPoint>) {
