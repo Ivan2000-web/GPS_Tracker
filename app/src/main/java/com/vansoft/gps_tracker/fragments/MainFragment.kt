@@ -53,6 +53,7 @@ class MainFragment : Fragment() {
     private lateinit var mLocOverlay: MyLocationNewOverlay
     private lateinit var binding: FragmentMainBinding
     private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
+    private lateinit var dist: String
     private val model: MainViewModel by activityViewModels{
         MainViewModel.ViewModelFactory((requireContext().applicationContext as MainApp).database)
     }
@@ -120,7 +121,7 @@ class MainFragment : Fragment() {
     }
 
     private fun getCurrentTime(): String {
-        return "Time: ${TimeUtils.getTime(System.currentTimeMillis() - startTime)}"
+        return TimeUtils.getTime(System.currentTimeMillis() - startTime)
     }
 
     private fun startStopService() {
@@ -144,11 +145,17 @@ class MainFragment : Fragment() {
     }
 
     private fun getTrackItem(): TrackItem{
+        val stringDistance = String.format("%.1f", locationModel?.distance)
+        dist = if(stringDistance == "n"){
+            "0.0"
+        } else {
+            stringDistance
+        }
         return TrackItem(
             null,
             getCurrentTime(),
             TimeUtils.getDate(),
-            String.format("%.1f", locationModel?.distance),
+            dist ,
             getAverageSpeed(locationModel?.distance ?: 0.0f),
             geoPointsToString(locationModel?.geoPointsList ?: listOf())
         )

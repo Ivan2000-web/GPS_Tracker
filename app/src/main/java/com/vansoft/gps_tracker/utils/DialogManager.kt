@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.util.Log
 import android.view.LayoutInflater
 import com.vansoft.gps_tracker.R
 import com.vansoft.gps_tracker.databinding.SaveDialogBinding
@@ -30,9 +31,9 @@ object DialogManager {
         builder.setView(binding.root)
         val dialog = builder.create()
         binding.apply {
-            val time = "${item?.time} s"
-            val speed = "${item?.averageSpeed} km/h"
-            val distance = "${item?.distance} m"
+            val time = "Time: ${item?.time} s"
+            val speed = "Speed: ${item?.averageSpeed} km/h"
+            val distance = "Distance: ${item?.distance} m"
             tvTime.text = time
             tvSpeed.text = speed
             tvDistance.text = distance
