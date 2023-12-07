@@ -132,14 +132,21 @@ class MainFragment : Fragment() {
             binding.fStartStop.setImageResource(R.drawable.ic_play)
             timer?.cancel()
             val track = getTrackItem()
-            DialogManager.showSaveDialog(requireContext(),
-                track,
-                object : DialogManager.Listener {
-                override fun onClick() {
-                    showToast("Track is saved!")
-                    model.insertTrack(track)
-                }
-            })
+            if(track.distance == "0.0"){
+                DialogManager.showStartDialog(
+                    activity as AppCompatActivity,
+                    "You stood still!"
+                )
+            }else {
+                DialogManager.showSaveDialog(requireContext(),
+                    track,
+                    object : DialogManager.Listener {
+                        override fun onClick() {
+                            showToast("Track is saved!")
+                            model.insertTrack(track)
+                        }
+                    })
+            }
         }
         isServiceRunning = !isServiceRunning
     }

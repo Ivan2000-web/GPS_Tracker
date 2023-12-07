@@ -48,6 +48,16 @@ object DialogManager {
         dialog.show()
     }
 
+    fun showStartDialog(context: Context, message: String){
+        val builder = AlertDialog.Builder(context)
+        val dialog = builder.create()
+        dialog.setMessage(message)
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE, "It's clear"){
+                _, _, -> dialog.dismiss()
+        }
+        dialog.show()
+    }
+
     interface Listener{
         fun onClick()
     }
