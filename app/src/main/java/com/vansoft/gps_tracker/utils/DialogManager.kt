@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.util.Log
 import android.view.LayoutInflater
 import com.vansoft.gps_tracker.R
 import com.vansoft.gps_tracker.databinding.SaveDialogBinding
@@ -22,6 +21,22 @@ object DialogManager {
         dialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No"){
                 _, _, -> dialog.dismiss()
         }
+        dialog.setCanceledOnTouchOutside(false) //запрещаем закрытие AlertDialog нажатием на область экрана
+        dialog.show()
+    }
+
+    fun showDeleteTrackDialog(context: Context, listener: Listener){
+        val builder = AlertDialog.Builder(context)
+        val dialog = builder.create()
+        dialog.setTitle(R.string.delete_track_title)
+        dialog.setMessage(context.getString(R.string.delete_track_message))
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes"){
+                _, _, -> listener.onClick()
+        }
+        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No"){
+                _, _, -> dialog.dismiss()
+        }
+        dialog.setCanceledOnTouchOutside(false)
         dialog.show()
     }
 
@@ -44,7 +59,7 @@ object DialogManager {
             bCancel.setOnClickListener(){ dialog.dismiss() }
         }
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT)) //делаем прозрачный фон у AlertDialog, т.к у нашего CardView не видны закруглённые края
-        dialog.setCanceledOnTouchOutside(false) //запрещаем закрытие AlertDialog нажатием на область экрана
+        dialog.setCanceledOnTouchOutside(false)
         dialog.show()
     }
 

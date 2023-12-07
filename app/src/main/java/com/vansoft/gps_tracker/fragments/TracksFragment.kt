@@ -1,10 +1,13 @@
 package com.vansoft.gps_tracker.fragments
 
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vansoft.gps_tracker.MainApp
@@ -12,6 +15,7 @@ import com.vansoft.gps_tracker.MainViewModel
 import com.vansoft.gps_tracker.databinding.TracksBinding
 import com.vansoft.gps_tracker.db.TrackAdapter
 import com.vansoft.gps_tracker.db.TrackItem
+import com.vansoft.gps_tracker.utils.DialogManager
 import com.vansoft.gps_tracker.utils.openFragment
 
 
@@ -57,7 +61,16 @@ class TracksFragment : Fragment(), TrackAdapter.Listener {
 
     override fun onClick(track: TrackItem, type: TrackAdapter.ClickType) {
         when(type){
-            TrackAdapter.ClickType.DELETE -> model.deleteTrack(track)
+            TrackAdapter.ClickType.DELETE -> {
+                DialogManager.showDeleteTrackDialog(
+                    activity as AppCompatActivity,
+                    object : DialogManager.Listener {
+                        override fun onClick() {
+                            model.deleteTrack(track)
+                        }
+                    }
+                )
+            }
             TrackAdapter.ClickType.OPEN -> {
                 model.currentTrack.value = track
                 openFragment(ViewTrackFragment.newInstance())
